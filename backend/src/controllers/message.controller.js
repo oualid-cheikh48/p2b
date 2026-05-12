@@ -1,15 +1,15 @@
-const bookingService = require("../services/booking.service");
+const messageService = require("../services/message.service");
 
-exports.getAllBookings = async (req, res) => {
+exports.getMessages = async (req, res) => {
 
   try {
 
-    const bookings =
-      await bookingService.getAllBookings();
+    const messages =
+      await messageService.getMessages();
 
     res.status(200).json({
       success: true,
-      data: bookings
+      data: messages
     });
 
   } catch (error) {
@@ -23,16 +23,16 @@ exports.getAllBookings = async (req, res) => {
 
 };
 
-exports.createBooking = async (req, res) => {
+exports.sendMessage = async (req, res) => {
 
   try {
 
-    const booking =
-      await bookingService.createBooking(req.body);
+    const message =
+      await messageService.sendMessage(req.body);
 
     res.status(201).json({
       success: true,
-      data: booking
+      data: message
     });
 
   } catch (error) {

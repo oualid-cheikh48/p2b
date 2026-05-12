@@ -1,15 +1,15 @@
-const bookingService = require("../services/booking.service");
+const reviewService = require("../services/review.service");
 
-exports.getAllBookings = async (req, res) => {
+exports.getAllReviews = async (req, res) => {
 
   try {
 
-    const bookings =
-      await bookingService.getAllBookings();
+    const reviews =
+      await reviewService.getAllReviews();
 
     res.status(200).json({
       success: true,
-      data: bookings
+      data: reviews
     });
 
   } catch (error) {
@@ -23,16 +23,16 @@ exports.getAllBookings = async (req, res) => {
 
 };
 
-exports.createBooking = async (req, res) => {
+exports.createReview = async (req, res) => {
 
   try {
 
-    const booking =
-      await bookingService.createBooking(req.body);
+    const review =
+      await reviewService.createReview(req.body);
 
     res.status(201).json({
       success: true,
-      data: booking
+      data: review
     });
 
   } catch (error) {

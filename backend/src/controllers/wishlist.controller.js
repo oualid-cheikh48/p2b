@@ -1,15 +1,15 @@
-const bookingService = require("../services/booking.service");
+const wishlistService = require("../services/wishlist.service");
 
-exports.getAllBookings = async (req, res) => {
+exports.getWishlist = async (req, res) => {
 
   try {
 
-    const bookings =
-      await bookingService.getAllBookings();
+    const wishlist =
+      await wishlistService.getWishlist();
 
     res.status(200).json({
       success: true,
-      data: bookings
+      data: wishlist
     });
 
   } catch (error) {
@@ -23,16 +23,16 @@ exports.getAllBookings = async (req, res) => {
 
 };
 
-exports.createBooking = async (req, res) => {
+exports.addToWishlist = async (req, res) => {
 
   try {
 
-    const booking =
-      await bookingService.createBooking(req.body);
+    const item =
+      await wishlistService.addToWishlist(req.body);
 
     res.status(201).json({
       success: true,
-      data: booking
+      data: item
     });
 
   } catch (error) {
