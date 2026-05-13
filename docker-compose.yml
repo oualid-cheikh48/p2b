@@ -4,36 +4,52 @@ services:
   # 1. Le service de Base de données
   db:
     image: postgres:15-alpine
-    container_name: etnair_db
+    container_name: p2b_db
     restart: always
     environment:
-      POSTGRES_USER: etnair_user
-      POSTGRES_PASSWORD: etnair_pass
-      POSTGRES_DB: etnair_db
+      POSTGRES_USER: p2b_user
+      POSTGRES_PASSWORD: p2b_pass
+      POSTGRES_DB: p2b_db
     volumes:
       - ./db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - etnair_network
+      - p2b_network
 
-  # 2. Le service API (Node.js)
+ # 2. Le service API (Node.js)
   api:
     build: ./api
-    container_name: etnair_api
+    container_name: p2b_api
     restart: always
     environment:
       DB_HOST: db
-      DB_USER: etnair_user
-      DB_PASSWORD: etnair_pass
-      DB_NAME: etnair_db
+      DB_USER: p2b_user
+      DB_PASSWORD: p2b_pass
+      DB_NAME: p2b_db
       PORT: 3000
     ports:
       - "3000:3000"
     depends_on:
       - db
     networks:
-      - etnair_network
+      - p2b_network
 
-# 3. La définition du réseau commun
+# 3. NOUVEAU : Le service pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: p2b_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@p2b.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - p2b_network
+
+# 4. La définition du réseau commun
 networks:
-  etnair_network:
+  p2b_network:
     driver: bridge
