@@ -1,19 +1,28 @@
 const prisma = require("../config/prisma");
 
-exports.create = async (data) => {
-  return prisma.property.create({
-    data,
-  });
-};
-
-exports.getAll = async () => {
+exports.getAllProperties = async () => {
   return prisma.property.findMany({
-    include: { owner: true },
+    include: { owner: true, images: true },
   });
 };
 
-exports.getOne = async (id) => {
-  return prisma.property.findUnique({
-    where: { id: Number(id) },
+exports.getPropertyById = async (id) => {
+  const property = await prisma.property.findUnique({
+    where: { id },
+    include: { owner: true, images: true, amenities: true },
   });
+  if (!property) throw new Error("Property not found");
+  return property;
+};
+
+exports.createProperty = async (data) => {
+  return prisma.property.create({ data });
+};
+
+exports.updateProperty = async (id, data) => {
+  return prisma.property.update({ where: { id }, data });
+};
+
+exports.deleteProperty = async (id) => {
+  return prisma.property.delete({ where: { id } });
 };

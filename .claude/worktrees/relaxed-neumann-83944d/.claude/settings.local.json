@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:/Users/ilham/p2b -not -path \"*/node_modules/*\" -not -path \"*/.git/*\" -not -path \"*/.claude/*\" | head -100)",
+      "Bash(npm install *)",
+      "PowerShell(Get-Command node -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command npm -ErrorAction SilentlyContinue)",
+      "PowerShell($env:PATH)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\nodejs\" -ErrorAction SilentlyContinue; Get-ChildItem \"C:\\\\Users\\\\ilham\\\\AppData\\\\Roaming\\\\npm\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:LOCALAPPDATA\\\\nvm\" -ErrorAction SilentlyContinue)",
+      "Bash(npm --version)",
+      "Bash(export PATH=\"/c/Users/ilham/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH\")",
+      "Bash(ls /c/Users/ilham/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/)",
+      "Bash(find /c/Users/ilham -name \"npm\" -o -name \"npm.cmd\" 2>/dev/null | head -5)",
+      "Bash(psql -U postgres -c \"CREATE USER etnair_user WITH PASSWORD 'etnair_pass';\")",
+      "Bash(psql -U postgres -c \"CREATE DATABASE etnair_db OWNER etnair_user;\")"
+    ]
+  }
+}
