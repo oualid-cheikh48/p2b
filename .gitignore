@@ -1,3 +1,7 @@
-.claude/
-.claude/
-.claude/
+node_modules/
+.env
+.prisma/
+dist/
+coverage/
+db/
+frontend/node_modules/
