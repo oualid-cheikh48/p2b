@@ -13,13 +13,29 @@ const Navbar = () => {
   return (
     <nav className="w-full px-8 py-4 flex items-center justify-between bg-white/5 backdrop-blur border-b border-white/10">
       <Link to="/" className="text-white font-bold text-xl tracking-tight">
-        ✈️ ETNAir
+        ✈️ P2B
       </Link>
+
+      {/* Liens navigation */}
+      <div className="hidden md:flex items-center gap-6">
+        <Link
+          to="/"
+          className="text-white/60 hover:text-white text-sm transition-colors"
+        >
+          Accueil
+        </Link>
+        <Link
+          to="/properties"
+          className="text-white/60 hover:text-white text-sm transition-colors"
+        >
+          Logements
+        </Link>
+      </div>
 
       <div className="flex items-center gap-4">
         {user ? (
           <>
-            <span className="text-white/60 text-sm">
+            <span className="text-white/60 text-sm hidden md:block">
               Bonjour, {user.first_name || user.email}
             </span>
             <Link

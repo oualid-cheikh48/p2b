@@ -1,7 +1,15 @@
 import { create } from "zustand";
 
+const safeParseJSON = (value) => {
+  try {
+    return value ? JSON.parse(value) : null;
+  } catch {
+    return null;
+  }
+};
+
 const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  user: safeParseJSON(localStorage.getItem("user")),
   token: localStorage.getItem("token") || null,
 
   login: (user, token) => {
