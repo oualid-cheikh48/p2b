@@ -17,3 +17,11 @@ exports.createUser = async (data) => {
 exports.getUsers = async () => {
   return prisma.user.findMany();
 };
+
+exports.updateUser = async (id, data) => {
+  const { password, ...safeData } = data;
+  return prisma.user.update({
+    where: { id },
+    data: safeData,
+  });
+};

@@ -24,9 +24,13 @@ exports.login = async (email, password) => {
 
   if (!ok) throw new Error("Invalid password");
 
-  return jwt.sign(
+  const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: "1d" }
   );
+
+  const { password_hash, ...safeUser } = user;
+
+  return { token, user: safeUser };
 };
