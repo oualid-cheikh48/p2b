@@ -4,6 +4,8 @@ services:
     image: postgres:15-alpine
     container_name: p2b_db
     restart: always
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: p2b_user
       POSTGRES_PASSWORD: p2b_pass

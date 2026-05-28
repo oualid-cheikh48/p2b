@@ -9,3 +9,12 @@ exports.getUsers = async (req, res) => {
   const users = await service.getUsers();
   res.json(users);
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await service.updateUser(parseInt(req.params.id), req.body);
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
