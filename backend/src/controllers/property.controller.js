@@ -1,26 +1,28 @@
 const propertyService = require("../services/property.service");
 
 exports.getAllProperties = async (req, res) => {
-
   try {
+    const filters = {
+      city: req.query.city,
+      property_type: req.query.property_type,
+      min_price: req.query.min_price,
+      max_price: req.query.max_price,
+      guests: req.query.guests,
+    };
 
-    const properties =
-      await propertyService.getAllProperties();
+    const properties = await propertyService.getAllProperties(filters);
 
     res.status(200).json({
       success: true,
-      data: properties
+      data: properties,
+      total: properties.length,
     });
-
   } catch (error) {
-
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
-
   }
-
 };
 
 exports.getPropertyById = async (req, res) => {

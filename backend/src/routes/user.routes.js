@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/user.controller");
+const authMiddleware = require("../middlewares/auth.middleware");
 
 /**
  * @swagger
@@ -52,5 +53,6 @@ router.get("/", controller.getUsers);
  *         description: Utilisateur créé
  */
 router.post("/", controller.createUser);
+router.put("/:id", authMiddleware, controller.updateUser);
 
 module.exports = router;
