@@ -3,6 +3,9 @@ const prisma = require("../config/prisma");
 exports.getAllProperties = async (filters = {}) => {
   const where = {};
 
+  if (filters.owner_id) {
+  where.owner_id = parseInt(filters.owner_id);
+  }
   if (filters.city) {
     where.city = { contains: filters.city, mode: "insensitive" };
   }

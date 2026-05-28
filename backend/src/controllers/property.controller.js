@@ -8,6 +8,7 @@ exports.getAllProperties = async (req, res) => {
       min_price: req.query.min_price,
       max_price: req.query.max_price,
       guests: req.query.guests,
+      owner_id: req.query.owner_id,
     };
 
     const properties = await propertyService.getAllProperties(filters);
