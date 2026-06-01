@@ -82,9 +82,9 @@ const Properties = () => {
           <SearchBar onSearch={handleSearch} />
         </div>
 
-        <div className="flex gap-8">
+        <div className="flex gap-8 items-start">
           {/* Sidebar filtres */}
-          <div className="hidden lg:block w-72 flex-shrink-0">
+          <div className="hidden lg:block w-72 flex-shrink-0 sticky top-6">
             <FilterSidebar filters={filters} onChange={handleFilterChange} />
           </div>
 

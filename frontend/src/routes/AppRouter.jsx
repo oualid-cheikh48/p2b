@@ -8,6 +8,8 @@ import PropertyDetails from "../pages/PropertyDetails";
 import CreateProperty from "../pages/dashboard/CreateProperty";
 import MyProperties from "../pages/dashboard/MyProperties";
 import EditProperty from "../pages/dashboard/EditProperty";
+import Bookings from "../pages/dashboard/Bookings";
+import Wishlist from "../pages/dashboard/Wishlist";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -31,6 +33,22 @@ const AppRouter = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/bookings"
+          element={
+            <ProtectedRoute>
+              <Bookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/wishlist"
+          element={
+            <ProtectedRoute>
+              <Wishlist />
             </ProtectedRoute>
           }
         />

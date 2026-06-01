@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import api from "../../api/axios";
+import ImageUploader from "../../components/ImageUploader";
 
 const propertyTypes = ["apartment", "house", "villa", "studio"];
 
@@ -246,6 +247,13 @@ const EditProperty = () => {
                 className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
               />
             </div>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+            <h2 className="text-white font-semibold text-lg mb-4">Photos du logement</h2>
+            <ImageUploader
+              propertyId={parseInt(id)}
+              onUploadSuccess={() => {}}
+            />
           </div>
 
           <div className="flex gap-4">

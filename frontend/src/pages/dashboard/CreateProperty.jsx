@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import useAuthStore from "../../store/authStore";
 import api from "../../api/axios";
+import ImageUploader from "../../components/ImageUploader";
 
 const propertyTypes = ["apartment", "house", "villa", "studio"];
 
@@ -12,6 +13,7 @@ const CreateProperty = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [createdPropertyId, setCreatedPropertyId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -36,7 +38,7 @@ const CreateProperty = () => {
     setError(null);
 
     try {
-      await api.post("/properties", {
+      const res = await api.post("/properties", {
         ...form,
         owner_id: user.id,
         price_per_night: parseFloat(form.price_per_night),
@@ -44,9 +46,10 @@ const CreateProperty = () => {
         bedrooms: parseInt(form.bedrooms),
         bathrooms: parseInt(form.bathrooms),
       });
-
+      const newId = res.data.data?.id || res.data.id;
+      setCreatedPropertyId(newId);
       setSuccess(true);
-      setTimeout(() => navigate("/dashboard/properties"), 2000);
+      // Ne redirige pas immédiatement — laisse uploader les images
     } catch (err) {
       setError(err.response?.data?.message || "Erreur lors de la création de l'annonce.");
     } finally {
@@ -61,8 +64,18 @@ const CreateProperty = () => {
         <p className="text-white/40 mb-8">Publiez votre logement sur p2b</p>
 
         {success && (
-          <div className="bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl px-4 py-3 mb-6">
-            ✅ Annonce créée avec succès ! Redirection en cours...
+          <div className="bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl px-4 py-4 mb-6">
+            <p className="font-semibold mb-2">✅ Annonce créée ! Ajoutez des photos ci-dessous.</p>
+            <ImageUploader
+              propertyId={createdPropertyId}
+              onUploadSuccess={() => setTimeout(() => navigate("/dashboard/properties"), 1500)}
+            />
+            <button
+              onClick={() => navigate("/dashboard/properties")}
+              className="mt-3 text-green-400/70 hover:text-green-300 text-sm underline"
+            >
+              Passer cette étape →
+            </button>
           </div>
         )}
 
