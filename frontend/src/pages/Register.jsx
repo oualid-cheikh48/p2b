@@ -1,22 +1,27 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
+import Toast from "../components/Toast";
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
   const navigate = useNavigate();
+  const [toast, setToast] = useState(null);
 
   const onSubmit = async (data) => {
     try {
       await api.post("/auth/register", data);
-      navigate("/login");
+      setToast({ message: "Compte créé avec succès !", type: "success" });
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      alert(err.response?.data?.error || "Erreur d'inscription");
+      setToast({ message: err.response?.data?.error || "Erreur d'inscription", type: "error" });
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="bg-white/10 backdrop-blur p-8 rounded-2xl w-full max-w-md">
         <h1 className="text-2xl font-bold text-white mb-6">Inscription</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

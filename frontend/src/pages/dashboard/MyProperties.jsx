@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import useAuthStore from "../../store/authStore";
 import api from "../../api/axios";
+import Toast from "../../components/Toast";
 
 const MyProperties = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
 
   const fetchMyProperties = async () => {
     try {
@@ -32,12 +34,13 @@ const MyProperties = () => {
       await api.delete(`/properties/${id}`);
       setProperties(properties.filter((p) => p.id !== id));
     } catch (err) {
-      alert("Erreur lors de la suppression.");
+      setToast({ message: "Erreur lors de la suppression.", type: "error" });
     }
   };
 
   return (
     <DashboardLayout>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="max-w-4xl">
         <div className="flex items-center justify-between mb-8">
           <div>

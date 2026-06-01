@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "../../components/DashboardLayout";
 import useAuthStore from "../../store/authStore";
 import api from "../../api/axios";
+import Toast from "../../components/Toast";
 
 const statusConfig = {
   pending: { label: "En attente", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
@@ -15,6 +16,7 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -44,7 +46,7 @@ const Bookings = () => {
         prev.map((b) => (b.id === id ? { ...b, booking_status: "cancelled" } : b))
       );
     } catch (err) {
-      alert("Impossible d'annuler la réservation.");
+      setToast({ message: "Impossible d'annuler la réservation.", type: "error" });
     }
   };
 
@@ -78,6 +80,7 @@ const Bookings = () => {
 
   return (
     <DashboardLayout>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="max-w-4xl">
         {/* Header */}
         <div className="mb-8">

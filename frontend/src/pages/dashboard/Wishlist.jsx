@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import useAuthStore from "../../store/authStore";
 import api from "../../api/axios";
+import Toast from "../../components/Toast";
 
 const Wishlist = () => {
   const { user } = useAuthStore();
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -39,13 +41,14 @@ const Wishlist = () => {
         await api.delete(`/wishlist/${propertyId}`);
         setWishlist((prev) => prev.filter((w) => w.property_id !== propertyId));
       } catch {
-        alert("Impossible de retirer de la wishlist.");
+        setToast({ message: "Impossible de retirer de la wishlist.", type: "error" });
       }
     }
   };
 
   return (
     <DashboardLayout>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="max-w-4xl">
         {/* Header */}
         <div className="mb-8">

@@ -24,11 +24,12 @@ const PropertyCard = ({ property }) => {
         {/* Image */}
         <div className="relative h-52 bg-white/5 overflow-hidden">
           {mainImage ? (
-            <img
-              src={mainImage}
-              alt={title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+        <img
+          src={mainImage}
+          alt={title}
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-white/20 text-4xl">
               🏠
