@@ -10,7 +10,7 @@ const links = [
   { path: "/dashboard/create", label: "Créer une annonce", icon: "➕" },
 ];
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ onClose }) => {
   const { logout, user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -20,10 +20,21 @@ const DashboardSidebar = () => {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-white/5 border-r border-white/10 flex flex-col p-6">
-      <div className="mb-8">
-        <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Connecté en tant que</p>
-        <p className="text-white font-semibold truncate">{user?.email || "Utilisateur"}</p>
+    <aside className="w-64 h-full min-h-screen bg-gray-950 border-r border-white/10 flex flex-col p-6">
+      {/* Header avec bouton fermer sur mobile */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Connecté en tant que</p>
+          <p className="text-white font-semibold truncate text-sm">{user?.email || "Utilisateur"}</p>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden text-white/40 hover:text-white p-1 transition-colors"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       <nav className="flex flex-col gap-2 flex-1">
@@ -31,6 +42,7 @@ const DashboardSidebar = () => {
           <NavLink
             key={link.path}
             to={link.path}
+            onClick={onClose}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition font-medium ${
                 isActive
