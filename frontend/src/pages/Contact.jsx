@@ -42,7 +42,7 @@ const Contact = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
           {[
             { icon: "💬", title: "Chat", desc: "Réponse en moins d'1h" },
-            { icon: "📧", title: "Email", desc: "support@etnair.com" },
+            { icon: "📧", title: "Email", desc: "support@p2b.com" },
             { icon: "🕐", title: "Horaires", desc: "Lun-Ven 9h-18h" },
           ].map((item, i) => (
             <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
@@ -107,7 +107,7 @@ const Contact = () => {
             {/* Note / Feedback */}
             <div>
               <label className="text-white/60 text-sm mb-2 block">
-                Votre expérience sur ETNAir
+                Votre expérience sur P2B
               </label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
