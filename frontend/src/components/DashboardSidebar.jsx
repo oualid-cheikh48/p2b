@@ -5,6 +5,7 @@ const links = [
   { path: "/dashboard/profile", label: "Mon Profil", icon: "👤" },
   { path: "/dashboard/bookings", label: "Mes Réservations", icon: "📅" },
   { path: "/dashboard/properties", label: "Mes Annonces", icon: "🏠" },
+  { path: "/dashboard/host-bookings", label: "Réservations reçues", icon: "📋" },
   { path: "/dashboard/wishlist", label: "Wishlist", icon: "❤️" },
   { path: "/dashboard/create", label: "Créer une annonce", icon: "➕" },
 ];

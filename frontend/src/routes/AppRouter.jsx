@@ -4,6 +4,7 @@ import Register from "../pages/Register";
 import Profile from "../pages/dashboard/Profile";
 import Home from "../pages/Home";
 import Properties from "../pages/Properties";
+import HostBookings from "../pages/dashboard/HostBookings";
 import PropertyDetails from "../pages/PropertyDetails";
 import CreateProperty from "../pages/dashboard/CreateProperty";
 import MyProperties from "../pages/dashboard/MyProperties";
@@ -76,6 +77,14 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/host-bookings"
+          element={
+            <ProtectedRoute>
+              <HostBookings />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
@@ -83,5 +92,6 @@ const AppRouter = () => {
     </BrowserRouter>
   );
 };
+
 
 export default AppRouter;

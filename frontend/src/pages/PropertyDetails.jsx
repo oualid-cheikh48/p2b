@@ -187,8 +187,7 @@ const PropertyDetails = () => {
           {images.length > 0 ? (
             <div>
               <div className="h-80 rounded-2xl overflow-hidden mb-3 relative">
-              <img src={img.image_url} alt="" loading="lazy" className="w-full h-full object-cover" />
-                {/* Wishlist button on image */}
+              <img src={images[activeImage]?.image_url} alt={property.title} loading="lazy" className="w-full h-full object-cover" />                {/* Wishlist button on image */}
                 <button
                   onClick={handleWishlist}
                   disabled={wishlistLoading}

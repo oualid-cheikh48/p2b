@@ -13,6 +13,7 @@ const EditProperty = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [existingImages, setExistingImages] = useState([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -44,6 +45,7 @@ const EditProperty = () => {
           city: data.city || "",
           address: data.address || "",
         });
+        setExistingImages(data.images || []);
       } catch (err) {
         setError("Annonce introuvable.");
       } finally {
@@ -55,6 +57,16 @@ const EditProperty = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm("Supprimer cette image ?")) return;
+    try {
+      await api.delete(`/properties/${id}/images/${imageId}`);
+      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+    } catch (err) {
+      alert("Erreur lors de la suppression de l'image.");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -248,11 +260,40 @@ const EditProperty = () => {
               />
             </div>
           </div>
+
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
             <h2 className="text-white font-semibold text-lg mb-4">Photos du logement</h2>
+
+            {existingImages.length > 0 && (
+              <div className="flex gap-3 flex-wrap mb-4">
+                {existingImages.map((img) => (
+                  <div key={img.id} className="relative w-24 h-20 rounded-xl overflow-hidden group">
+                    <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                    {img.is_main && (
+                      <span className="absolute top-1 left-1 bg-violet-600/80 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                        Principale
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(img.id)}
+                      className="absolute top-1 right-1 w-6 h-6 bg-red-500/80 hover:bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <ImageUploader
               propertyId={parseInt(id)}
-              onUploadSuccess={() => {}}
+              onUploadSuccess={() => {
+                api.get(`/properties/${id}`).then((res) => {
+                  const data = res.data.data || res.data;
+                  setExistingImages(data.images || []);
+                });
+              }}
             />
           </div>
 

@@ -56,3 +56,7 @@ exports.updateProperty = async (id, data) => {
 exports.deleteProperty = async (id) => {
   return prisma.property.delete({ where: { id } });
 };
+
+exports.deletePropertyImage = async (imageId) => {
+  return prisma.propertyImage.delete({ where: { id: imageId } });
+};

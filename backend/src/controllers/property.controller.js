@@ -123,3 +123,12 @@ exports.deleteProperty = async (req, res) => {
   }
 
 };
+
+exports.deletePropertyImage = async (req, res) => {
+  try {
+    await propertyService.deletePropertyImage(parseInt(req.params.imageId));
+    res.status(200).json({ success: true, message: "Image supprimée" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

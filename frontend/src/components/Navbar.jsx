@@ -13,7 +13,7 @@ const Navbar = () => {
   return (
     <nav className="w-full px-8 py-4 flex items-center justify-between bg-white/5 backdrop-blur border-b border-white/10">
       <Link to="/" className="text-white font-bold text-xl tracking-tight">
-        ✈️ P2B
+        P2B
       </Link>
 
       {/* Liens navigation */}

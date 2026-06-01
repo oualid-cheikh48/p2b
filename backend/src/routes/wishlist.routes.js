@@ -52,4 +52,26 @@ router.get("/", wishlistController.getWishlist);
  */
 router.post("/", authMiddleware, wishlistController.addToWishlist);
 
+/**
+ * @swagger
+ * /wishlist/{id}:
+ *   delete:
+ *     summary: Retirer un logement des favoris
+ *     tags: [Wishlist]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Retiré des favoris
+ *       404:
+ *         description: Favori introuvable
+ */
+router.delete("/:id", authMiddleware, wishlistController.removeFromWishlist);
+
 module.exports = router;
