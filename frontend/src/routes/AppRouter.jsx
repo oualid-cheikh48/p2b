@@ -11,6 +11,7 @@ import MyProperties from "../pages/dashboard/MyProperties";
 import EditProperty from "../pages/dashboard/EditProperty";
 import Bookings from "../pages/dashboard/Bookings";
 import Wishlist from "../pages/dashboard/Wishlist";
+import Contact from "../pages/Contact";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -27,6 +28,7 @@ const AppRouter = () => {
         <Route path="/properties/:id" element={<PropertyDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Protected routes */}
         <Route

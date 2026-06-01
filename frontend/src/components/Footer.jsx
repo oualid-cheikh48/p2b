@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           <div>
-            <p className="font-bold text-lg mb-4 text-white">✈️ ETNAir</p>
+            <p className="font-bold text-lg mb-4 text-white">P2B</p>
             <p className="text-white/40 text-sm leading-relaxed">
               La plateforme de location moderne pour voyageurs et hôtes.
             </p>
@@ -20,6 +20,7 @@ const Footer = () => {
               <li><button onClick={() => navigate("/properties?city=Paris")} className="hover:text-white transition-colors">Paris</button></li>
               <li><button onClick={() => navigate("/properties?city=Lyon")} className="hover:text-white transition-colors">Lyon</button></li>
               <li><button onClick={() => navigate("/properties?city=Nice")} className="hover:text-white transition-colors">Nice</button></li>
+              <li><button onClick={() => navigate("/contact")} className="hover:text-white transition-colors">Contact</button></li>
             </ul>
           </div>
           <div>
@@ -39,7 +40,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/30 text-sm">
-          <p>© 2025 ETNAir. Tous droits réservés.</p>
+          <p>© 2025 p2b. Tous droits réservés.</p>
           <p>Projet ETNA — Module C2W-CBI1</p>
         </div>
       </div>

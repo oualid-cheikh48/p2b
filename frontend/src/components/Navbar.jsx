@@ -29,6 +29,9 @@ const Navbar = () => {
           <Link to="/properties" className="text-white/60 hover:text-white text-sm transition-colors">
             Logements
           </Link>
+          <Link to="/contact" className="text-white/60 hover:text-white text-sm transition-colors">
+            Contact
+          </Link>
         </div>
 
         {/* Actions desktop */}
@@ -85,6 +88,14 @@ const Navbar = () => {
             className="text-white/60 hover:text-white text-sm transition-colors py-2"
           >
             Logements
+          </Link>
+
+          <Link
+            to="/contact"
+            onClick={() => setMenuOpen(false)}
+            className="text-white/60 hover:text-white text-sm transition-colors py-2"
+          >
+            Contact
           </Link>
 
           {user ? (
