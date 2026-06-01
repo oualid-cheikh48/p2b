@@ -26,6 +26,8 @@ const EditProperty = () => {
     country: "",
     city: "",
     address: "",
+    latitude: "",
+    longitude: "",
   });
 
   useEffect(() => {
@@ -259,6 +261,35 @@ const EditProperty = () => {
                 className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
               />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-white/60 text-sm mb-1 block">Latitude</label>
+              <input
+                type="number"
+                name="latitude"
+                value={form.latitude}
+                onChange={handleChange}
+                placeholder="48.8566"
+                step="any"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-1 block">Longitude</label>
+              <input
+                type="number"
+                name="longitude"
+                value={form.longitude}
+                onChange={handleChange}
+                placeholder="2.3522"
+                step="any"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+              />
+            </div>
+          </div>
+          <p className="text-white/30 text-xs">
+            💡 Trouvez les coordonnées sur <a href="https://www.latlong.net" target="_blank" rel="noreferrer" className="text-violet-400 hover:underline">latlong.net</a>
+          </p>
           </div>
 
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">

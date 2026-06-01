@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api/axios";
@@ -14,23 +14,53 @@ const PropertyDetails = () => {
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
 
-  // Booking state
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingError, setBookingError] = useState(null);
 
-  // Wishlist state
   const [inWishlist, setInWishlist] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  const [nearbyPlaces, setNearbyPlaces] = useState([]);
+  const [placesLoading, setPlacesLoading] = useState(false);
+
+  // Déclaré AVANT les useEffect qui l'utilisent
+  const fetchNearbyPlaces = useCallback(async (lat, lon) => {
+    setPlacesLoading(true);
+    try {
+      const query = `
+        [out:json][timeout:10];
+        (
+          node["amenity"~"restaurant|cafe|bar|museum|cinema|park|supermarket|pharmacy"](around:1000,${lat},${lon});
+          node["tourism"~"attraction|museum|hotel"](around:1000,${lat},${lon});
+          node["leisure"~"park|garden"](around:1000,${lat},${lon});
+        );
+        out body 10;
+      `;
+      const res = await fetch(
+        `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
+      );
+      const data = await res.json();
+      setNearbyPlaces(data.elements || []);
+    } catch (err) {
+      console.error("Erreur Overpass:", err);
+    } finally {
+      setPlacesLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProperty = async () => {
       setLoading(true);
       try {
         const res = await api.get(`/properties/${id}`);
-        setProperty(res.data.data || res.data);
+        const p = res.data.data || res.data;
+        setProperty(p);
+        if (p.latitude && p.longitude) {
+          fetchNearbyPlaces(p.latitude, p.longitude);
+        }
       } catch (err) {
         console.error("Erreur chargement propriété:", err);
       } finally {
@@ -38,7 +68,7 @@ const PropertyDetails = () => {
       }
     };
     fetchProperty();
-  }, [id]);
+  }, [id, fetchNearbyPlaces]);
 
   useEffect(() => {
     const checkWishlist = async () => {
@@ -71,10 +101,7 @@ const PropertyDetails = () => {
   };
 
   const handleBooking = async () => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    if (!token) { navigate("/login"); return; }
     if (!startDate || !endDate) {
       setBookingError("Veuillez sélectionner les dates d'arrivée et de départ.");
       return;
@@ -83,10 +110,8 @@ const PropertyDetails = () => {
       setBookingError("La date de départ doit être après la date d'arrivée.");
       return;
     }
-
     setBookingLoading(true);
     setBookingError(null);
-
     try {
       await api.post("/bookings", {
         guest_id: user.id,
@@ -97,23 +122,17 @@ const PropertyDetails = () => {
       });
       setBookingSuccess(true);
     } catch (err) {
-      setBookingError(
-        err.response?.data?.message || "Erreur lors de la réservation. Réessayez."
-      );
+      setBookingError(err.response?.data?.message || "Erreur lors de la réservation. Réessayez.");
     } finally {
       setBookingLoading(false);
     }
   };
 
   const handleWishlist = async () => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    if (!token) { navigate("/login"); return; }
     setWishlistLoading(true);
     try {
       if (inWishlist) {
-        // Get wishlist to find item id
         const res = await api.get("/wishlist");
         const data = res.data.data || res.data;
         const item = Array.isArray(data) && data.find(
@@ -122,10 +141,7 @@ const PropertyDetails = () => {
         if (item) await api.delete(`/wishlist/${item.id}`);
         setInWishlist(false);
       } else {
-        await api.post("/wishlist", {
-          user_id: user.id,
-          property_id: parseInt(id),
-        });
+        await api.post("/wishlist", { user_id: user.id, property_id: parseInt(id) });
         setInWishlist(true);
       }
     } catch (err) {
@@ -173,13 +189,8 @@ const PropertyDetails = () => {
   return (
     <div className="min-h-screen bg-[#050816] text-white">
       <Navbar />
-
       <div className="max-w-5xl mx-auto px-4 py-10">
-        {/* Retour */}
-        <Link
-          to="/properties"
-          className="text-white/50 hover:text-white text-sm mb-6 inline-flex items-center gap-2 transition-colors"
-        >
+        <Link to="/properties" className="text-white/50 hover:text-white text-sm mb-6 inline-flex items-center gap-2 transition-colors">
           ← Retour aux annonces
         </Link>
 
@@ -188,16 +199,11 @@ const PropertyDetails = () => {
           {images.length > 0 ? (
             <div>
               <div className="h-80 rounded-2xl overflow-hidden mb-3 relative">
-              <img src={images[activeImage]?.image_url} alt={property.title} loading="lazy" className="w-full h-full object-cover" />                {/* Wishlist button on image */}
+                <img src={images[activeImage]?.image_url} alt={property.title} loading="lazy" className="w-full h-full object-cover" />
                 <button
                   onClick={handleWishlist}
                   disabled={wishlistLoading}
-                  className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur transition-colors ${
-                    inWishlist
-                      ? "bg-red-500 text-white"
-                      : "bg-black/50 text-white/70 hover:bg-black/70"
-                  }`}
-                  title={inWishlist ? "Retirer des favoris" : "Ajouter aux favoris"}
+                  className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur transition-colors ${inWishlist ? "bg-red-500 text-white" : "bg-black/50 text-white/70 hover:bg-black/70"}`}
                 >
                   {inWishlist ? "❤️" : "🤍"}
                 </button>
@@ -205,14 +211,8 @@ const PropertyDetails = () => {
               {images.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto">
                   {images.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveImage(i)}
-                      className={`flex-shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 transition-colors ${
-                        activeImage === i ? "border-violet-500" : "border-transparent"
-                      }`}
-                    >
-                      <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                    <button key={i} onClick={() => setActiveImage(i)} className={`flex-shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 transition-colors ${activeImage === i ? "border-violet-500" : "border-transparent"}`}>
+                      <img src={img.image_url} alt="" loading="lazy" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -221,15 +221,7 @@ const PropertyDetails = () => {
           ) : (
             <div className="h-80 rounded-2xl bg-white/5 flex items-center justify-center text-6xl relative">
               🏠
-              <button
-                onClick={handleWishlist}
-                disabled={wishlistLoading}
-                className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur transition-colors ${
-                  inWishlist
-                    ? "bg-red-500 text-white"
-                    : "bg-black/50 text-white/70 hover:bg-black/70"
-                }`}
-              >
+              <button onClick={handleWishlist} disabled={wishlistLoading} className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur transition-colors ${inWishlist ? "bg-red-500 text-white" : "bg-black/50 text-white/70 hover:bg-black/70"}`}>
                 {inWishlist ? "❤️" : "🤍"}
               </button>
             </div>
@@ -237,12 +229,9 @@ const PropertyDetails = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Infos principales */}
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <span className="text-violet-400 text-sm capitalize mb-2 block">
-                {property.property_type}
-              </span>
+              <span className="text-violet-400 text-sm capitalize mb-2 block">{property.property_type}</span>
               <h1 className="text-3xl font-bold text-white mb-2">{property.title}</h1>
               <p className="text-white/50">📍 {property.city}, {property.country}</p>
             </div>
@@ -272,10 +261,7 @@ const PropertyDetails = () => {
                 <h2 className="text-white font-semibold text-lg mb-3">Équipements</h2>
                 <div className="grid grid-cols-2 gap-2">
                   {amenities.map((amenity, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-2 text-white/60 text-sm bg-white/5 rounded-xl px-3 py-2"
-                    >
+                    <div key={i} className="flex items-center gap-2 text-white/60 text-sm bg-white/5 rounded-xl px-3 py-2">
                       <span className="text-violet-400">✓</span>
                       {amenity.amenity?.name || `Équipement ${amenity.amenity_id}`}
                     </div>
@@ -288,16 +274,46 @@ const PropertyDetails = () => {
               <div>
                 <h2 className="text-white font-semibold text-lg mb-3">Hôte</h2>
                 <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-4">
-                  <div className="w-12 h-12 rounded-full bg-violet-600/30 flex items-center justify-center text-xl">
-                    👤
-                  </div>
+                  <div className="w-12 h-12 rounded-full bg-violet-600/30 flex items-center justify-center text-xl">👤</div>
                   <div>
-                    <p className="text-white font-medium">
-                      {property.owner.first_name} {property.owner.last_name}
-                    </p>
+                    <p className="text-white font-medium">{property.owner.first_name} {property.owner.last_name}</p>
                     <p className="text-white/40 text-sm">Hôte ETNAir</p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Activités à proximité */}
+            {(placesLoading || nearbyPlaces.length > 0) && (
+              <div>
+                <h2 className="text-white font-semibold text-lg mb-3">Activités à proximité</h2>
+                {placesLoading ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} className="bg-white/5 rounded-xl p-3 animate-pulse">
+                        <div className="h-4 bg-white/10 rounded w-3/4 mb-2" />
+                        <div className="h-3 bg-white/10 rounded w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    {nearbyPlaces.slice(0, 8).map((place, i) => {
+                      const type = place.tags?.amenity || place.tags?.tourism || place.tags?.leisure;
+                      const icons = { restaurant: "🍽️", cafe: "☕", bar: "🍸", museum: "🏛️", cinema: "🎬", park: "🌳", garden: "🌿", supermarket: "🛒", pharmacy: "💊", attraction: "⭐", hotel: "🏨" };
+                      const icon = icons[type] || "📍";
+                      return (
+                        <div key={i} className="flex items-start gap-2 bg-white/5 rounded-xl px-3 py-2 text-sm">
+                          <span>{icon}</span>
+                          <div className="min-w-0">
+                            <p className="text-white/80 truncate">{place.tags?.name || type || "Point d'intérêt"}</p>
+                            <p className="text-white/40 text-xs capitalize">{type}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -314,13 +330,8 @@ const PropertyDetails = () => {
                 <div className="bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl px-4 py-4 text-center">
                   <p className="text-2xl mb-2">🎉</p>
                   <p className="font-semibold mb-1">Réservation confirmée !</p>
-                  <p className="text-sm text-green-400/70">
-                    Retrouvez-la dans votre dashboard.
-                  </p>
-                  <Link
-                    to="/dashboard/bookings"
-                    className="block mt-3 text-sm text-green-300 hover:underline"
-                  >
+                  <p className="text-sm text-green-400/70">Retrouvez-la dans votre dashboard.</p>
+                  <Link to="/dashboard/bookings" className="block mt-3 text-sm text-green-300 hover:underline">
                     Voir mes réservations →
                   </Link>
                 </div>
@@ -331,37 +342,17 @@ const PropertyDetails = () => {
                       ❌ {bookingError}
                     </div>
                   )}
-
                   <div className="space-y-3 mb-4">
                     <div>
                       <label className="text-white/60 text-sm mb-1 block">Arrivée</label>
-                      <input
-                        type="date"
-                        min={today}
-                        value={startDate}
-                        onChange={(e) => {
-                          setStartDate(e.target.value);
-                          setBookingError(null);
-                        }}
-                        className="w-full bg-white/10 border border-white/20 text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-violet-500"
-                      />
+                      <input type="date" min={today} value={startDate} onChange={(e) => { setStartDate(e.target.value); setBookingError(null); }} className="w-full bg-white/10 border border-white/20 text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-violet-500" />
                     </div>
                     <div>
                       <label className="text-white/60 text-sm mb-1 block">Départ</label>
-                      <input
-                        type="date"
-                        min={startDate || today}
-                        value={endDate}
-                        onChange={(e) => {
-                          setEndDate(e.target.value);
-                          setBookingError(null);
-                        }}
-                        className="w-full bg-white/10 border border-white/20 text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-violet-500"
-                      />
+                      <input type="date" min={startDate || today} value={endDate} onChange={(e) => { setEndDate(e.target.value); setBookingError(null); }} className="w-full bg-white/10 border border-white/20 text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-violet-500" />
                     </div>
                   </div>
 
-                  {/* Récapitulatif prix */}
                   {nights > 0 && totalPrice && (
                     <div className="bg-white/5 rounded-xl p-3 mb-4 space-y-2 text-sm">
                       <div className="flex justify-between text-white/50">
@@ -375,21 +366,10 @@ const PropertyDetails = () => {
                     </div>
                   )}
 
-                  <button
-                    onClick={handleBooking}
-                    disabled={bookingLoading}
-                    className="w-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
-                  >
-                    {bookingLoading
-                      ? "Réservation en cours..."
-                      : token
-                      ? "Réserver"
-                      : "Se connecter pour réserver"}
+                  <button onClick={handleBooking} disabled={bookingLoading} className="w-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors">
+                    {bookingLoading ? "Réservation en cours..." : token ? "Réserver" : "Se connecter pour réserver"}
                   </button>
-
-                  <p className="text-white/30 text-xs text-center mt-3">
-                    Vous ne serez pas débité maintenant
-                  </p>
+                  <p className="text-white/30 text-xs text-center mt-3">Vous ne serez pas débité maintenant</p>
                 </>
               )}
             </div>
