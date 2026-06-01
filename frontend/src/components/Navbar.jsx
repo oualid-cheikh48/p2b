@@ -18,7 +18,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="text-white font-bold text-xl tracking-tight">
-          ✈️ P2B
+          P2B
         </Link>
 
         {/* Liens desktop */}

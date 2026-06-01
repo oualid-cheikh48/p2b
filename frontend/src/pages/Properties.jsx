@@ -5,6 +5,8 @@ import PropertyGrid from "../components/PropertyGrid";
 import SearchBar from "../components/SearchBar";
 import FilterSidebar from "../components/FilterSidebar";
 import api from "../api/axios";
+import ScrollToTop from "../components/ScrollToTop";
+import Footer from "../components/Footer";
 
 const Properties = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -129,6 +131,8 @@ const Properties = () => {
           </div>
         </div>
       </div>
+      <Footer />
+      <ScrollToTop />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api/axios";
 import useAuthStore from "../store/authStore";
+import Footer from "../components/Footer";
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -395,6 +396,7 @@ const PropertyDetails = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
