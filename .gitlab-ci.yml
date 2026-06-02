@@ -6,6 +6,7 @@ test:
   stage: test
   image: node:18
   script:
+    - cd  p2b/backend/
     - npm install
     - npm test
 
