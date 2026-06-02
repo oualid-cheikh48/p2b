@@ -17,3 +17,11 @@ exports.createBooking = async (data) => {
     },
   });
 };
+
+
+exports.updateBooking = async (id, data) => {
+  return prisma.booking.update({
+    where: { id },
+    data,
+  });
+};

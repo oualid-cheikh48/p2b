@@ -146,5 +146,7 @@ router.put("/:id", authMiddleware, controller.updateProperty);
  *         description: Erreur serveur
  */
 router.delete("/:id", authMiddleware, controller.deleteProperty);
+router.delete("/:id/images/:imageId", authMiddleware, controller.deletePropertyImage);
+
 
 module.exports = router;

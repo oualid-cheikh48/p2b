@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 import useAuthStore from "../store/authStore";
+import Toast from "../components/Toast";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
   const { login } = useAuthStore();
   const navigate = useNavigate();
+  const [toast, setToast] = useState(null);
 
   const onSubmit = async (data) => {
     try {
@@ -14,12 +17,13 @@ const Login = () => {
       login(res.data.user, res.data.token);
       navigate("/dashboard/profile");
     } catch (err) {
-      alert(err.response?.data?.error || "Erreur de connexion");
+      setToast({ message: err.response?.data?.error || "Email ou mot de passe incorrect", type: "error" });
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="bg-white/10 backdrop-blur p-8 rounded-2xl w-full max-w-md">
         <h1 className="text-2xl font-bold text-white mb-6">Connexion</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

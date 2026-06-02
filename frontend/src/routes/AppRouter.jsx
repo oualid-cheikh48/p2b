@@ -4,10 +4,14 @@ import Register from "../pages/Register";
 import Profile from "../pages/dashboard/Profile";
 import Home from "../pages/Home";
 import Properties from "../pages/Properties";
+import HostBookings from "../pages/dashboard/HostBookings";
 import PropertyDetails from "../pages/PropertyDetails";
 import CreateProperty from "../pages/dashboard/CreateProperty";
 import MyProperties from "../pages/dashboard/MyProperties";
 import EditProperty from "../pages/dashboard/EditProperty";
+import Bookings from "../pages/dashboard/Bookings";
+import Wishlist from "../pages/dashboard/Wishlist";
+import Contact from "../pages/Contact";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -24,6 +28,7 @@ const AppRouter = () => {
         <Route path="/properties/:id" element={<PropertyDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Protected routes */}
         <Route
@@ -31,6 +36,22 @@ const AppRouter = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/bookings"
+          element={
+            <ProtectedRoute>
+              <Bookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/wishlist"
+          element={
+            <ProtectedRoute>
+              <Wishlist />
             </ProtectedRoute>
           }
         />
@@ -58,6 +79,14 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/host-bookings"
+          element={
+            <ProtectedRoute>
+              <HostBookings />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
@@ -65,5 +94,6 @@ const AppRouter = () => {
     </BrowserRouter>
   );
 };
+
 
 export default AppRouter;

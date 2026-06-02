@@ -5,6 +5,8 @@ import PropertyGrid from "../components/PropertyGrid";
 import SearchBar from "../components/SearchBar";
 import FilterSidebar from "../components/FilterSidebar";
 import api from "../api/axios";
+import ScrollToTop from "../components/ScrollToTop";
+import Footer from "../components/Footer";
 
 const Properties = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -82,9 +84,9 @@ const Properties = () => {
           <SearchBar onSearch={handleSearch} />
         </div>
 
-        <div className="flex gap-8">
+        <div className="flex gap-8 items-start">
           {/* Sidebar filtres */}
-          <div className="hidden lg:block w-72 flex-shrink-0">
+          <div className="hidden lg:block w-72 flex-shrink-0 sticky top-6">
             <FilterSidebar filters={filters} onChange={handleFilterChange} />
           </div>
 
@@ -129,6 +131,8 @@ const Properties = () => {
           </div>
         </div>
       </div>
+      <Footer />
+      <ScrollToTop />
     </div>
   );
 };

@@ -15,8 +15,7 @@ exports.uploadImage = async (req, res) => {
       "Content-Type": req.file.mimetype,
     });
 
-    const imageUrl = `http://${process.env.MINIO_ENDPOINT || "p2b_minio"}:${process.env.MINIO_PORT || 9000}/${BUCKET}/${fileName}`;
-
+    const imageUrl = `${process.env.MINIO_PUBLIC_URL || "http://localhost:9000"}/${BUCKET}/${fileName}`;
     if (req.body.property_id) {
       await prisma.propertyImage.create({
         data: {

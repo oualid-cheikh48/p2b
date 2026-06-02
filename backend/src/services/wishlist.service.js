@@ -14,3 +14,9 @@ exports.addToWishlist = async (data) => {
     },
   });
 };
+
+exports.removeFromWishlist = async (id) => {
+  return prisma.wishlist.delete({
+    where: { id },
+  });
+};

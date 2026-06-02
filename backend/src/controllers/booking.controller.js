@@ -45,3 +45,15 @@ exports.createBooking = async (req, res) => {
   }
 
 };
+
+exports.updateBooking = async (req, res) => {
+  try {
+    const booking = await bookingService.updateBooking(
+      parseInt(req.params.id),
+      req.body
+    );
+    res.status(200).json({ success: true, data: booking });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

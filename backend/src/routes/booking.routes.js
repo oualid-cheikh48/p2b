@@ -62,5 +62,6 @@ router.get("/", bookingController.getAllBookings);
  *         description: Erreur serveur
  */
 router.post("/", authMiddleware, bookingController.createBooking);
+router.put("/:id", authMiddleware, bookingController.updateBooking);
 
 module.exports = router;

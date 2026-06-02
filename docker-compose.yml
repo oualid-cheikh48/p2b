@@ -26,6 +26,7 @@ services:
       DB_HOST: db
       DB_USER: p2b_user
       DB_PASSWORD: p2b_pass
+      MINIO_PUBLIC_URL: http://localhost:9000
       DB_NAME: p2b_db
       PORT: 3000
     ports:

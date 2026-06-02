@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import api from "../../api/axios";
+import ImageUploader from "../../components/ImageUploader";
 
 const propertyTypes = ["apartment", "house", "villa", "studio"];
 
@@ -12,6 +13,7 @@ const EditProperty = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [existingImages, setExistingImages] = useState([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -24,6 +26,8 @@ const EditProperty = () => {
     country: "",
     city: "",
     address: "",
+    latitude: "",
+    longitude: "",
   });
 
   useEffect(() => {
@@ -43,6 +47,7 @@ const EditProperty = () => {
           city: data.city || "",
           address: data.address || "",
         });
+        setExistingImages(data.images || []);
       } catch (err) {
         setError("Annonce introuvable.");
       } finally {
@@ -54,6 +59,16 @@ const EditProperty = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm("Supprimer cette image ?")) return;
+    try {
+      await api.delete(`/properties/${id}/images/${imageId}`);
+      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+    } catch (err) {
+      alert("Erreur lors de la suppression de l'image.");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -246,6 +261,71 @@ const EditProperty = () => {
                 className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
               />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-white/60 text-sm mb-1 block">Latitude</label>
+              <input
+                type="number"
+                name="latitude"
+                value={form.latitude}
+                onChange={handleChange}
+                placeholder="48.8566"
+                step="any"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-1 block">Longitude</label>
+              <input
+                type="number"
+                name="longitude"
+                value={form.longitude}
+                onChange={handleChange}
+                placeholder="2.3522"
+                step="any"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+              />
+            </div>
+          </div>
+          <p className="text-white/30 text-xs">
+            💡 Trouvez les coordonnées sur <a href="https://www.latlong.net" target="_blank" rel="noreferrer" className="text-violet-400 hover:underline">latlong.net</a>
+          </p>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+            <h2 className="text-white font-semibold text-lg mb-4">Photos du logement</h2>
+
+            {existingImages.length > 0 && (
+              <div className="flex gap-3 flex-wrap mb-4">
+                {existingImages.map((img) => (
+                  <div key={img.id} className="relative w-24 h-20 rounded-xl overflow-hidden group">
+                    <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                    {img.is_main && (
+                      <span className="absolute top-1 left-1 bg-violet-600/80 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                        Principale
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(img.id)}
+                      className="absolute top-1 right-1 w-6 h-6 bg-red-500/80 hover:bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <ImageUploader
+              propertyId={parseInt(id)}
+              onUploadSuccess={() => {
+                api.get(`/properties/${id}`).then((res) => {
+                  const data = res.data.data || res.data;
+                  setExistingImages(data.images || []);
+                });
+              }}
+            />
           </div>
 
           <div className="flex gap-4">
