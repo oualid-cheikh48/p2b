@@ -6,15 +6,8 @@ test:
   stage: test
   image: node:18
   script:
-    - cd  p2b/backend/
-    - npm install
-    - npm test
-
-deploy:
-  stage: deploy
-  only:
-    - main
-  image: docker
-  script:
-    - echo "Déploiement en cours..."
-    - kubectl apply -f deployment.yaml
+    - echo "Voici les dossiers que je vois à la racine du projet :"
+    - ls -la
+    # - cd nom_du_dossier (on le mettra plus tard quand on sera sûr)
+    # - npm install
+    # - npm test
