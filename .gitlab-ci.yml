@@ -1,13 +1,29 @@
 stages:
   - test
+  - security
   - deploy
 
 test:
   stage: test
   image: node:18
   script:
-    - echo "Voici les dossiers que je vois à la racine du projet :"
-    - ls -la
-    # - cd nom_du_dossier (on le mettra plus tard quand on sera sûr)
-    # - npm install
-    # - npm test
+    - cd backend
+    - npm install
+    - npm test
+
+audit_securite:
+  stage: security
+  image: node:18
+  script:
+    - cd backend
+    - npm install --package-lock-only # Installe juste la liste pour l'audit
+    - npm audit --audit-level=high # Fait planter le pipeline uniquement si une faille critique ou haute est détectée
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  image: bitnami/kubectl:latest
+  script:
+    - echo "Déploiement en cours..."
+    - kubectl apply -f deployment.yaml
