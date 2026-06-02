@@ -1,0 +1,19 @@
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  image: node:18
+  script:
+    - npm install
+    - npm test
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  image: docker
+  script:
+    - echo "Déploiement en cours..."
+    - kubectl apply -f deployment.yaml
