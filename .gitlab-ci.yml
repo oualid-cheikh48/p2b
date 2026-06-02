@@ -16,14 +16,14 @@ audit_securite:
   image: node:18
   script:
     - cd backend
-    - npm install --package-lock-only # Installe juste la liste pour l'audit
-    - npm audit --audit-level=high # Fait planter le pipeline uniquement si une faille critique ou haute est détectée
+    - npm install --package-lock-only
+    - npm audit --audit-level=high
 
 deploy:
   stage: deploy
   only:
     - main
-  image: bitnami/kubectl:latest
+  image: docker  # <-- On remet l'image d'origine ici !
   script:
     - echo "Déploiement en cours..."
     - kubectl apply -f deployment.yaml
