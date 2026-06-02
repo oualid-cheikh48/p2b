@@ -277,7 +277,7 @@ const PropertyDetails = () => {
                   <div className="w-12 h-12 rounded-full bg-violet-600/30 flex items-center justify-center text-xl">👤</div>
                   <div>
                     <p className="text-white font-medium">{property.owner.first_name} {property.owner.last_name}</p>
-                    <p className="text-white/40 text-sm">Hôte ETNAir</p>
+                    <p className="text-white/40 text-sm">Hôte p2b</p>
                   </div>
                 </div>
               </div>
