@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import useAuthStore from "../../store/authStore";
+import useThemeStore from "../../store/themeStore";
 import api from "../../api/axios";
 import ImageUploader from "../../components/ImageUploader";
 
@@ -9,6 +10,8 @@ const propertyTypes = ["apartment", "house", "villa", "studio"];
 
 const CreateProperty = () => {
   const { user } = useAuthStore();
+  const { theme } = useThemeStore();
+  const isDark = theme === "dark";
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -51,7 +54,6 @@ const CreateProperty = () => {
       const newId = res.data.data?.id || res.data.id;
       setCreatedPropertyId(newId);
       setSuccess(true);
-      // Ne redirige pas immédiatement — laisse uploader les images
     } catch (err) {
       setError(err.response?.data?.message || "Erreur lors de la création de l'annonce.");
     } finally {
@@ -59,14 +61,32 @@ const CreateProperty = () => {
     }
   };
 
+  const cardClass = isDark
+    ? "bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4"
+    : "bg-white border border-gray-200 rounded-2xl p-6 space-y-4 shadow-sm";
+
+  const labelClass = isDark ? "text-white/60 text-sm mb-1 block" : "text-gray-600 text-sm mb-1 block";
+
+  const inputClass = isDark
+    ? "w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+    : "w-full bg-white border border-gray-200 text-gray-900 placeholder-gray-400 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition-colors";
+
   return (
     <DashboardLayout>
       <div className="max-w-2xl">
-        <h1 className="text-3xl font-bold text-white mb-2">Créer une annonce</h1>
-        <p className="text-white/40 mb-8">Publiez votre logement sur p2b</p>
+        <h1 className={isDark ? "text-3xl font-bold text-white mb-2" : "text-3xl font-bold text-slate-900 mb-2"}>
+          Créer une annonce
+        </h1>
+        <p className={isDark ? "text-white/40 mb-8" : "text-gray-500 mb-8"}>Publiez votre logement sur p2b</p>
 
         {success && (
-          <div className="bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl px-4 py-4 mb-6">
+          <div
+            className={
+              isDark
+                ? "bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl px-4 py-4 mb-6"
+                : "bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-4 mb-6"
+            }
+          >
             <p className="font-semibold mb-2">✅ Annonce créée ! Ajoutez des photos ci-dessous.</p>
             <ImageUploader
               propertyId={createdPropertyId}
@@ -74,7 +94,11 @@ const CreateProperty = () => {
             />
             <button
               onClick={() => navigate("/dashboard/properties")}
-              className="mt-3 text-green-400/70 hover:text-green-300 text-sm underline"
+              className={
+                isDark
+                  ? "mt-3 text-green-400/70 hover:text-green-300 text-sm underline"
+                  : "mt-3 text-green-700 hover:text-green-800 text-sm underline"
+              }
             >
               Passer cette étape →
             </button>
@@ -82,18 +106,25 @@ const CreateProperty = () => {
         )}
 
         {error && (
-          <div className="bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 mb-6">
+          <div
+            className={
+              isDark
+                ? "bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 mb-6"
+                : "bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 mb-6"
+            }
+          >
             ❌ {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <h2 className="text-white font-semibold text-lg mb-4">Informations principales</h2>
+          <div className={cardClass}>
+            <h2 className={isDark ? "text-white font-semibold text-lg mb-4" : "text-gray-900 font-semibold text-lg mb-4"}>
+              Informations principales
+            </h2>
 
             <div>
-              <label className="text-white/60 text-sm mb-1 block">Titre de l'annonce *</label>
+              <label className={labelClass}>Titre de l'annonce *</label>
               <input
                 type="text"
                 name="title"
@@ -101,12 +132,12 @@ const CreateProperty = () => {
                 onChange={handleChange}
                 required
                 placeholder="Ex: Bel appartement au cœur de Paris"
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="text-white/60 text-sm mb-1 block">Description *</label>
+              <label className={labelClass}>Description *</label>
               <textarea
                 name="description"
                 value={form.description}
@@ -114,21 +145,21 @@ const CreateProperty = () => {
                 required
                 rows={4}
                 placeholder="Décrivez votre logement en détail..."
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors resize-none"
+                className={`${inputClass} resize-none`}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Type de logement</label>
+                <label className={labelClass}>Type de logement</label>
                 <select
                   name="property_type"
                   value={form.property_type}
                   onChange={handleChange}
-                  className="w-full bg-white/10 border border-white/20 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 >
                   {propertyTypes.map((type) => (
-                    <option key={type} value={type} className="bg-gray-900">
+                    <option key={type} value={type} className={isDark ? "bg-gray-900" : "bg-white text-gray-900"}>
                       {type.charAt(0).toUpperCase() + type.slice(1)}
                     </option>
                   ))}
@@ -136,7 +167,7 @@ const CreateProperty = () => {
               </div>
 
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Prix par nuit (€) *</label>
+                <label className={labelClass}>Prix par nuit (€) *</label>
                 <input
                   type="number"
                   name="price_per_night"
@@ -145,18 +176,20 @@ const CreateProperty = () => {
                   required
                   min="1"
                   placeholder="85"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <h2 className="text-white font-semibold text-lg mb-4">Capacité</h2>
+          <div className={cardClass}>
+            <h2 className={isDark ? "text-white font-semibold text-lg mb-4" : "text-gray-900 font-semibold text-lg mb-4"}>
+              Capacité
+            </h2>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Voyageurs max *</label>
+                <label className={labelClass}>Voyageurs max *</label>
                 <input
                   type="number"
                   name="max_guests"
@@ -165,66 +198,82 @@ const CreateProperty = () => {
                   required
                   min="1"
                   placeholder="4"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Chambres</label>
+                <label className={labelClass}>Chambres</label>
                 <input
                   type="number"
                   name="bedrooms"
                   value={form.bedrooms}
                   onChange={handleChange}
                   min="1"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Salles de bain</label>
+                <label className={labelClass}>Salles de bain</label>
                 <input
                   type="number"
                   name="bathrooms"
                   value={form.bathrooms}
                   onChange={handleChange}
                   min="1"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <h2 className="text-white font-semibold text-lg mb-4">Localisation</h2>
+          <div className={cardClass}>
+            <h2 className={isDark ? "text-white font-semibold text-lg mb-4" : "text-gray-900 font-semibold text-lg mb-4"}>
+              Localisation
+            </h2>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Pays</label>
+                <label className={labelClass}>Pays</label>
                 <input
                   type="text"
                   name="country"
                   value={form.country}
                   onChange={handleChange}
                   placeholder="France"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Ville</label>
+                <label className={labelClass}>Ville</label>
                 <input
                   type="text"
                   name="city"
                   value={form.city}
                   onChange={handleChange}
                   placeholder="Paris"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+            </div>
+
+            <div>
+              <label className={labelClass}>Adresse</label>
+              <input
+                type="text"
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+                placeholder="12 Rue de la Paix, 75001 Paris"
+                className={inputClass}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Latitude</label>
+                <label className={labelClass}>Latitude</label>
                 <input
                   type="number"
                   name="latitude"
@@ -232,11 +281,11 @@ const CreateProperty = () => {
                   onChange={handleChange}
                   placeholder="48.8566"
                   step="any"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
               <div>
-                <label className="text-white/60 text-sm mb-1 block">Longitude</label>
+                <label className={labelClass}>Longitude</label>
                 <input
                   type="number"
                   name="longitude"
@@ -244,34 +293,33 @@ const CreateProperty = () => {
                   onChange={handleChange}
                   placeholder="2.3522"
                   step="any"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
+                  className={inputClass}
                 />
               </div>
             </div>
-            <p className="text-white/30 text-xs">
-              💡 Trouvez les coordonnées sur <a href="https://www.latlong.net" target="_blank" rel="noreferrer" className="text-violet-400 hover:underline">latlong.net</a>
-            </p>
-              
-            </div>
 
-            <div>
-              <label className="text-white/60 text-sm mb-1 block">Adresse</label>
-              <input
-                type="text"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-                placeholder="12 Rue de la Paix, 75001 Paris"
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/30 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-colors"
-              />
-            </div>
+            <p className={isDark ? "text-white/30 text-xs" : "text-gray-500 text-xs"}>
+              💡 Trouvez les coordonnées sur{" "}
+              <a
+                href="https://www.latlong.net"
+                target="_blank"
+                rel="noreferrer"
+                className={isDark ? "text-violet-400 hover:underline" : "text-violet-600 hover:underline"}
+              >
+                latlong.net
+              </a>
+            </p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button
               type="button"
               onClick={() => navigate("/dashboard/properties")}
-              className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors"
+              className={
+                isDark
+                  ? "flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors"
+                  : "flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 py-3 rounded-xl font-medium transition-colors shadow-sm"
+              }
             >
               Annuler
             </button>
@@ -283,7 +331,6 @@ const CreateProperty = () => {
               {loading ? "Publication en cours..." : "Publier l'annonce"}
             </button>
           </div>
-
         </form>
       </div>
     </DashboardLayout>
