@@ -1,0 +1,11 @@
+gitlabUrl: "https://rendu-git.etna-alternance.net" 
+runnerToken: glrt-pEnxxPA0Otb23J6VfsR-bW86MQpwOmVueGMKdDozCnU6MmlnFA.01.1e1jq2oh2 
+rbac: 
+  create: true 
+runners: 
+  config: | 
+    [[runners]] 
+      name = "runner-p2b-k3s" 
+      executor = "kubernetes" 
+      [runners.kubernetes] 
+        image = "node:18" 
