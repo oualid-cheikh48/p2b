@@ -20,18 +20,17 @@ audit_securite:
     - npm install --package-lock-only
     - npm audit --audit-level=high
 
-# --- L'Usine Frontend : Combo Kaniko + Docker Hub (Version Stabilisée) ---
+# --- L'Usine Frontend : Combo Kaniko + Docker Hub ---
 build_frontend:
   stage: build
   image:
-    name: gcr.io/kaniko-project/executor:v1.23.1-debug  # FIX : Version stable figée pour éviter les régressions
+    name: gcr.io/kaniko-project/executor:v1.23.1-debug
     entrypoint: [""]
   script:
     - echo "Configuration de l'authentification Docker Hub pour Kaniko..."
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"aminkrbh\",\"password\":\"$DOCKER_HUB_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - echo "Construction et envoi de l'image..."
-    # FIX : Ajout de --skip-unused-stages pour nettoyer le push vers Docker Hub
     - /kaniko/executor --context $CI_PROJECT_DIR/frontend --dockerfile $CI_PROJECT_DIR/frontend/Dockerfile --destination aminkrbh/p2b-frontend:latest --skip-unused-stages
 
 deploy:
@@ -50,8 +49,9 @@ deploy:
     - kubectl apply -f k8s/api-deployment.yaml
 
     - echo "Déploiement du frontend..."
-    - sed -i "s|frontend-image:latest|aminkrbh/p2b-frontend:latest|g" k8s/frontend.yaml
-    - kubectl apply -f k8s/frontend.yaml
+    # FIX : On pointe bien sur frontend-deployment.yaml ici
+    - sed -i "s|frontend-image:latest|aminkrbh/p2b-frontend:latest|g" k8s/frontend-deployment.yaml
+    - kubectl apply -f k8s/frontend-deployment.yaml
 
     - echo "Configuration du routeur Ingress (Traefik)..."
     - kubectl apply -f k8s/ingress.yaml
