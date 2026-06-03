@@ -140,8 +140,8 @@ const Home = () => {
             {[
               { city: "Paris", img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400" },
               { city: "Lyon", img: "https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?w=400" },
-              { city: "Nice", img: "https://images.unsplash.com/photo-1491166617655-0723a0567989?w=400" },
-              { city: "Bordeaux", img: "https://images.unsplash.com/photo-1589535015258-37e853361e8e?w=400" },
+              { city: "Nice", img: "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=400" },
+              { city: "Bordeaux", img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400" },
             ].map((dest, i) => (
               <button
                 key={i}

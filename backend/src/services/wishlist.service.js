@@ -2,7 +2,14 @@ const prisma = require("../config/prisma");
 
 exports.getWishlist = async () => {
   return prisma.wishlist.findMany({
-    include: { user: true, property: true },
+    include: {
+  user: true,
+  property: {
+    include: {
+      images: true
+    }
+  }
+},
   });
 };
 
