@@ -28,6 +28,7 @@ build_frontend:
     - docker:24.0.5-dind
   variables:
     DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://localhost:2375  # FIX : Force le client à parler au sidecar Docker sur K8s
   script:
     - echo "Connexion sécurisée à Docker Hub..."
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "aminkrbh" --password-stdin
@@ -53,7 +54,6 @@ deploy:
     - kubectl apply -f k8s/api-deployment.yaml
 
     - echo "Déploiement du frontend..."
-    # On injecte ton image Docker Hub publique à la place du faux nom
     - sed -i "s|frontend-image:latest|aminkrbh/p2b-frontend:latest|g" k8s/frontend.yaml
     - kubectl apply -f k8s/frontend.yaml
 
