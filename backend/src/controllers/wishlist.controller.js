@@ -45,3 +45,12 @@ exports.addToWishlist = async (req, res) => {
   }
 
 };
+
+exports.removeFromWishlist = async (req, res) => {
+  try {
+    await wishlistService.removeFromWishlist(parseInt(req.params.id));
+    res.status(200).json({ success: true, message: "Retiré des favoris" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

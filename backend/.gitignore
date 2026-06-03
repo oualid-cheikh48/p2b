@@ -1,5 +1,6 @@
-node_modules
+node_modules/
 .env
-.prisma
-dist
-coverage
+.prisma/
+dist/
+coverage/
+db/
