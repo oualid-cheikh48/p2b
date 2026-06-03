@@ -1,6 +1,7 @@
 stages:
   - test
   - security
+  - build      # NOUVEAU : La phase de création d'image
   - deploy
 
 test:
@@ -19,17 +20,45 @@ audit_securite:
     - npm install --package-lock-only
     - npm audit --audit-level=high
 
+# --- NOUVEAU JOB : L'Usine Frontend ---
+build_frontend:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo "Connexion au registre GitLab..."
+    # On utilise les variables secrètes par défaut de GitLab pour se connecter
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - echo "Construction de l'image..."
+    - cd frontend
+    - docker build -t $CI_REGISTRY_IMAGE/frontend:latest .
+    - echo "Envoi de l'image sécurisée sur le registre..."
+    - docker push $CI_REGISTRY_IMAGE/frontend:latest
+
 deploy:
   stage: deploy
   only:
     - main
   image: docker
   before_script:
-    # Installation de kubectl à la volée dans le conteneur
+    # Installation de kubectl (existant)
     - apk add --no-cache curl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
   script:
-    - echo "Déploiement en cours..."
+    - echo "Déploiement du backend..."
     - kubectl apply -f deployment.yaml
+
+    # --- NOUVEAU : Déploiement du Frontend et de l'Ingress ---
+    - echo "Déploiement du frontend..."
+    # Astuce DevOps : On remplace le nom fictif de l'image dans notre fichier par la vraie URL du registre GitLab !
+    - sed -i "s|frontend-image:latest|$CI_REGISTRY_IMAGE/frontend:latest|g" k8s/frontend.yaml
+    - kubectl apply -f k8s/frontend.yaml
+
+    - echo "Configuration du routeur Ingress (Traefik)..."
+    - kubectl apply -f k8s/ingress.yaml
+    - echo "Déploiement terminé avec succès ! 🚀"
