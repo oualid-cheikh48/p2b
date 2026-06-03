@@ -39,4 +39,4 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-      nodePort: 30432 # Port externe pour pgAdmin
+      nodePort: 31437 # Port externe pour pgAdmin
