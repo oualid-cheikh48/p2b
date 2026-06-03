@@ -1,0 +1,163 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import DashboardLayout from "../../components/DashboardLayout";
+import useAuthStore from "../../store/authStore";
+import api from "../../api/axios";
+import Toast from "../../components/Toast";
+
+const Wishlist = () => {
+  const { user } = useAuthStore();
+  const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const res = await api.get("/wishlist");
+        const data = res.data.data || res.data;
+        // Filter wishlist items belonging to current user
+        const myWishlist = Array.isArray(data)
+          ? data.filter((w) => w.user_id === user?.id)
+          : [];
+        setWishlist(myWishlist);
+      } catch (err) {
+        console.error("Erreur chargement wishlist:", err);
+        setWishlist([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (user?.id) fetchWishlist();
+  }, [user]);
+
+  const handleRemove = async (wishlistId, propertyId) => {
+    try {
+      await api.delete(`/wishlist/${wishlistId}`);
+      setWishlist((prev) => prev.filter((w) => w.id !== wishlistId));
+    } catch (err) {
+      // Fallback: try by property_id
+      try {
+        await api.delete(`/wishlist/${propertyId}`);
+        setWishlist((prev) => prev.filter((w) => w.property_id !== propertyId));
+      } catch {
+        setToast({ message: "Impossible de retirer de la wishlist.", type: "error" });
+      }
+    }
+  };
+
+  return (
+    <DashboardLayout>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      <div className="max-w-4xl">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-1">Ma Wishlist</h1>
+          <p className="text-white/40">
+            {loading
+              ? "Chargement..."
+              : `${wishlist.length} logement${wishlist.length > 1 ? "s" : ""} sauvegardé${wishlist.length > 1 ? "s" : ""}`}
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden animate-pulse"
+              >
+                <div className="h-40 bg-white/10" />
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-white/10 rounded w-3/4" />
+                  <div className="h-3 bg-white/10 rounded w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : wishlist.length === 0 ? (
+          <div className="text-center py-20 bg-white/5 border border-white/10 rounded-2xl">
+            <p className="text-4xl mb-4">❤️</p>
+            <p className="text-white/50 text-lg mb-2">Votre wishlist est vide</p>
+            <p className="text-white/30 text-sm mb-6">
+              Ajoutez des logements à vos favoris pour les retrouver ici.
+            </p>
+            <Link
+              to="/properties"
+              className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-xl font-medium transition-colors inline-block"
+            >
+              Explorer les logements
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {wishlist.map((item) => {
+              const property = item.property;
+              const mainImage =
+                property?.images?.find((img) => img.is_main)?.image_url ||
+                property?.images?.[0]?.image_url ||
+                null;
+
+              return (
+                <div
+                  key={item.id}
+                  className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-violet-500/30 transition-colors group"
+                >
+                  {/* Image */}
+                  <div className="relative h-40 bg-white/5 overflow-hidden">
+                    {mainImage ? (
+                      <img
+                        src={mainImage}
+                        alt={property?.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl text-white/20">
+                        🏠
+                      </div>
+                    )}
+                    {/* Remove button */}
+                    <button
+                      onClick={() => handleRemove(item.id, item.property_id)}
+                      className="absolute top-3 right-3 bg-black/50 backdrop-blur hover:bg-red-500/80 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors text-sm"
+                      title="Retirer de la wishlist"
+                    >
+                      ❤️
+                    </button>
+                    {property?.price_per_night && (
+                      <span className="absolute bottom-3 right-3 bg-violet-600 text-white text-sm font-semibold px-3 py-1 rounded-full">
+                        {property.price_per_night}€ / nuit
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Infos */}
+                  <div className="p-4">
+                    <h3 className="text-white font-semibold mb-1 truncate">
+                      {property?.title || `Logement #${item.property_id}`}
+                    </h3>
+                    {property?.city && (
+                      <p className="text-white/40 text-sm mb-3">
+                        📍 {property.city}, {property.country}
+                      </p>
+                    )}
+                    {property?.id && (
+                      <Link
+                        to={`/properties/${property.id}`}
+                        className="block w-full text-center bg-violet-600/20 hover:bg-violet-600/40 text-violet-400 py-2 rounded-xl text-sm font-medium transition-colors"
+                      >
+                        Voir le logement →
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default Wishlist;

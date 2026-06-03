@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: p2b-api
+  labels:
+    app: p2b-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: p2b-api
+  template:
+    metadata:
+      labels:
+        app: p2b-api
+    spec:
+      containers:
+      - name: p2b-api
+        image: aminkrbh/p2b-api:v1
+        ports:
+        - containerPort: 3000

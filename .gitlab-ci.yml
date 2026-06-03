@@ -1,0 +1,35 @@
+stages:
+  - test
+  - security
+  - deploy
+
+test:
+  stage: test
+  image: node:18
+  script:
+    - cd backend
+    - npm install
+    - npm test
+
+audit_securite:
+  stage: security
+  image: node:18
+  script:
+    - cd backend
+    - npm install --package-lock-only
+    - npm audit --audit-level=high
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  image: docker
+  before_script:
+    # Installation de kubectl à la volée dans le conteneur
+    - apk add --no-cache curl
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x kubectl
+    - mv kubectl /usr/local/bin/
+  script:
+    - echo "Déploiement en cours..."
+    - kubectl apply -f deployment.yaml
