@@ -20,23 +20,18 @@ audit_securite:
     - npm install --package-lock-only
     - npm audit --audit-level=high
 
-# --- L'Usine Frontend branchée sur Docker Hub ---
+# --- L'Usine Frontend : Combo Kaniko + Docker Hub (Zéro Démon, Zéro Blocage) ---
 build_frontend:
   stage: build
-  image: docker:24.0.5
-  services:
-    - docker:24.0.5-dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375  # FIX : Utilise l'alias réseau officiel du service sur GitLab
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
   script:
-    - echo "Connexion sécurisée à Docker Hub..."
-    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "aminkrbh" --password-stdin
-    - echo "Construction de l'image Frontend..."
-    - cd frontend
-    - docker build -t aminkrbh/p2b-frontend:latest .
-    - echo "Envoi de l'image sur Docker Hub..."
-    - docker push aminkrbh/p2b-frontend:latest
+    - echo "Configuration de l'authentification Docker Hub pour Kaniko..."
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"aminkrbh\",\"password\":\"$DOCKER_HUB_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "Construction et envoi de l'image..."
+    - /kaniko/executor --context $CI_PROJECT_DIR/frontend --dockerfile $CI_PROJECT_DIR/frontend/Dockerfile --destination aminkrbh/p2b-frontend:latest
 
 deploy:
   stage: deploy
