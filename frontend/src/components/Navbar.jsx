@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import useThemeStore from "../store/themeStore";
 
 const Navbar = () => {
   const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const isDark = theme === "dark";
 
   const handleLogout = () => {
     logout();
@@ -14,34 +17,37 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full px-4 md:px-8 py-4 bg-white/5 backdrop-blur border-b border-white/10 relative z-10">
+    <nav className={`w-full px-4 md:px-8 py-4 backdrop-blur border-b relative z-10 ${isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200"}`}>
       <div className="flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-white font-bold text-xl tracking-tight">
+        <Link to="/" className={`font-bold text-xl tracking-tight ${isDark ? "text-white" : "text-gray-900"}`}>
           P2B
         </Link>
 
         {/* Liens desktop */}
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-white/60 hover:text-white text-sm transition-colors">
+          <Link to="/" className={`text-sm transition-colors ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
             Accueil
           </Link>
-          <Link to="/properties" className="text-white/60 hover:text-white text-sm transition-colors">
+          <Link to="/properties" className={`text-sm transition-colors ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
             Logements
           </Link>
-          <Link to="/contact" className="text-white/60 hover:text-white text-sm transition-colors">
+          <Link to="/contact" className={`text-sm transition-colors ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
             Contact
           </Link>
         </div>
 
         {/* Actions desktop */}
         <div className="hidden md:flex items-center gap-4">
+          <button onClick={toggleTheme} className={`transition text-xl ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
+            {isDark ? "☀️" : "🌙"}
+          </button>
           {user ? (
             <>
-              <span className="text-white/60 text-sm">
+              <span className={`text-sm ${isDark ? "text-white/60" : "text-gray-500"}`}>
                 Bonjour, {user.first_name || user.email}
               </span>
-              <Link to="/dashboard/profile" className="text-white/80 hover:text-white text-sm transition">
+              <Link to="/dashboard/profile" className={`text-sm transition ${isDark ? "text-white/80 hover:text-white" : "text-gray-700 hover:text-gray-900"}`}>
                 Dashboard
               </Link>
               <button
@@ -53,7 +59,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="text-white/80 hover:text-white text-sm transition">
+              <Link to="/login" className={`text-sm transition ${isDark ? "text-white/80 hover:text-white" : "text-gray-700 hover:text-gray-900"}`}>
                 Connexion
               </Link>
               <Link to="/register" className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm transition">
@@ -66,7 +72,7 @@ const Navbar = () => {
         {/* Bouton hamburger mobile */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className={`md:hidden p-2 rounded-lg transition-colors ${isDark ? "text-white hover:bg-white/10" : "text-gray-900 hover:bg-gray-100"}`}
         >
           {menuOpen ? "✕" : "☰"}
         </button>
@@ -74,60 +80,34 @@ const Navbar = () => {
 
       {/* Menu mobile */}
       {menuOpen && (
-        <div className="md:hidden mt-4 pb-4 border-t border-white/10 pt-4 flex flex-col gap-3">
-          <Link
-            to="/"
-            onClick={() => setMenuOpen(false)}
-            className="text-white/60 hover:text-white text-sm transition-colors py-2"
-          >
+        <div className={`md:hidden mt-4 pb-4 border-t pt-4 flex flex-col gap-3 ${isDark ? "border-white/10" : "border-gray-200"}`}>
+          <Link to="/" onClick={() => setMenuOpen(false)} className={`text-sm transition-colors py-2 ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
             Accueil
           </Link>
-          <Link
-            to="/properties"
-            onClick={() => setMenuOpen(false)}
-            className="text-white/60 hover:text-white text-sm transition-colors py-2"
-          >
+          <Link to="/properties" onClick={() => setMenuOpen(false)} className={`text-sm transition-colors py-2 ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
             Logements
           </Link>
-
-          <Link
-            to="/contact"
-            onClick={() => setMenuOpen(false)}
-            className="text-white/60 hover:text-white text-sm transition-colors py-2"
-          >
+          <Link to="/contact" onClick={() => setMenuOpen(false)} className={`text-sm transition-colors py-2 ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
             Contact
           </Link>
-
+          <button onClick={toggleTheme} className={`transition text-xl py-2 text-left ${isDark ? "text-white/60 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
+            {isDark ? "☀️ Mode clair" : "🌙 Mode sombre"}
+          </button>
           {user ? (
             <>
-              <Link
-                to="/dashboard/profile"
-                onClick={() => setMenuOpen(false)}
-                className="text-white/80 hover:text-white text-sm transition py-2"
-              >
+              <Link to="/dashboard/profile" onClick={() => setMenuOpen(false)} className={`text-sm transition py-2 ${isDark ? "text-white/80 hover:text-white" : "text-gray-700 hover:text-gray-900"}`}>
                 Dashboard
               </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm transition text-left"
-              >
+              <button onClick={handleLogout} className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm transition text-left">
                 Déconnexion
               </button>
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="text-white/80 hover:text-white text-sm transition py-2"
-              >
+              <Link to="/login" onClick={() => setMenuOpen(false)} className={`text-sm transition py-2 ${isDark ? "text-white/80 hover:text-white" : "text-gray-700 hover:text-gray-900"}`}>
                 Connexion
               </Link>
-              <Link
-                to="/register"
-                onClick={() => setMenuOpen(false)}
-                className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm transition text-center"
-              >
+              <Link to="/register" onClick={() => setMenuOpen(false)} className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm transition text-center">
                 S'inscrire
               </Link>
             </>

@@ -5,12 +5,16 @@ import PropertyCard from "../components/PropertyCard";
 import api from "../api/axios";
 import ScrollToTop from "../components/ScrollToTop";
 import Footer from "../components/Footer";
+import useThemeStore from "../store/themeStore";
 
 const Home = () => {
   const navigate = useNavigate();
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const { theme } = useThemeStore();
+
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -33,7 +37,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className={`min-h-screen ${isDark ? "bg-[#050816]" : "bg-gray-50"}`}>
       <Navbar />
 
       {/* Hero avec image de fond */}
@@ -78,7 +82,7 @@ const Home = () => {
       </section>
 
       {/* Stats */}
-      <section className="bg-white/3 py-10 border-b border-white/5">
+      <section className={`py-10 border-b ${isDark ? "bg-white/3 border-white/5" : "bg-white border-gray-200"}`}>
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 text-center">
           {[
             { value: "500+", label: "Logements disponibles" },
@@ -86,8 +90,8 @@ const Home = () => {
             { value: "1000+", label: "Voyageurs satisfaits" },
           ].map((stat, i) => (
             <div key={i}>
-              <p className="text-3xl font-bold text-white">{stat.value}</p>
-              <p className="text-white/40 text-sm mt-1">{stat.label}</p>
+              <p className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{stat.value}</p>
+              <p className={`text-sm mt-1 ${isDark ? "text-white/40" : "text-gray-500"}`}>{stat.label}</p>
             </div>
           ))}
         </div>
@@ -96,7 +100,7 @@ const Home = () => {
       {/* Logements populaires */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Logements populaires</h2>
+          <h2 className={`text-2xl md:text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>Logements populaires</h2>
           <button
             onClick={() => navigate("/properties")}
             className="text-violet-400 hover:text-violet-300 text-sm font-semibold transition-colors"
@@ -108,11 +112,11 @@ const Home = () => {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="rounded-2xl overflow-hidden bg-white/5 border border-white/10 animate-pulse">
-                <div className="h-52 bg-white/10" />
+              <div key={i} className={`rounded-2xl overflow-hidden border animate-pulse ${isDark ? "bg-white/5 border-white/10" : "bg-gray-200 border-gray-300"}`}>
+                <div className={`h-52 ${isDark ? "bg-white/10" : "bg-gray-300"}`} />
                 <div className="p-4 space-y-3">
-                  <div className="h-4 bg-white/10 rounded w-3/4" />
-                  <div className="h-3 bg-white/10 rounded w-1/2" />
+                  <div className={`h-4 rounded w-3/4 ${isDark ? "bg-white/10" : "bg-gray-300"}`} />
+                  <div className={`h-3 rounded w-1/2 ${isDark ? "bg-white/10" : "bg-gray-300"}`} />
                 </div>
               </div>
             ))}
@@ -127,9 +131,9 @@ const Home = () => {
       </section>
 
       {/* Destinations populaires */}
-      <section className="bg-white/3 py-16">
+      <section className={`py-16 ${isDark ? "bg-white/3" : "bg-white"}`}>
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
+          <h2 className={`text-2xl md:text-3xl font-bold mb-8 ${isDark ? "text-white" : "text-gray-900"}`}>
             Destinations populaires
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -162,7 +166,7 @@ const Home = () => {
 
       {/* Pourquoi nous */}
       <section className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
+        <h2 className={`text-2xl md:text-3xl font-bold mb-8 ${isDark ? "text-white" : "text-gray-900"}`}>
           Pourquoi choisir p2b ?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -171,11 +175,11 @@ const Home = () => {
             { icon: "🔒", title: "Paiement sécurisé", desc: "Vos transactions sont protégées et sécurisées à chaque étape." },
             { icon: "💬", title: "Support 24/7", desc: "Notre équipe est disponible à toute heure pour vous accompagner." },
           ].map((item, i) => (
-            <div key={i} className="flex gap-4 bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-violet-500/30 transition-colors">
+            <div key={i} className={`flex gap-4 border rounded-2xl p-6 transition-colors ${isDark ? "bg-white/5 border-white/10 hover:border-violet-500/30" : "bg-white border-gray-200 hover:border-violet-400"}`}>
               <span className="text-3xl flex-shrink-0">{item.icon}</span>
               <div>
-                <h3 className="font-semibold text-white mb-1">{item.title}</h3>
-                <p className="text-white/40 text-sm leading-relaxed">{item.desc}</p>
+                <h3 className={`font-semibold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}>{item.title}</h3>
+                <p className={`text-sm leading-relaxed ${isDark ? "text-white/40" : "text-gray-500"}`}>{item.desc}</p>
               </div>
             </div>
           ))}
@@ -183,13 +187,13 @@ const Home = () => {
       </section>
 
       {/* CTA hôte */}
-      <section className="bg-violet-600/10 border-t border-violet-500/20 py-16">
+      <section className={`border-t py-16 ${isDark ? "bg-violet-600/10 border-violet-500/20" : "bg-violet-50 border-violet-200"}`}>
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
               Vous avez un logement à louer ?
             </h2>
-            <p className="text-white/40">
+            <p className={isDark ? "text-white/40" : "text-gray-500"}>
               Rejoignez des milliers d'hôtes et commencez à gagner de l'argent.
             </p>
           </div>
@@ -202,7 +206,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
       <ScrollToTop />
     </div>

@@ -23,6 +23,8 @@ services:
     container_name: p2b_api
     restart: always
     environment:
+      DATABASE_URL: postgresql://p2b_user:p2b_pass@db:5432/p2b_db
+      JWT_SECRET: etnair_secret
       DB_HOST: db
       DB_USER: p2b_user
       DB_PASSWORD: p2b_pass
@@ -30,7 +32,7 @@ services:
       DB_NAME: p2b_db
       PORT: 3000
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - db
       - minio
