@@ -1,7 +1,7 @@
 stages:
   - test
   - security
-  - build      # NOUVEAU : La phase de création d'image
+  - build
   - deploy
 
 test:
@@ -50,15 +50,17 @@ deploy:
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
   script:
-    - echo "Déploiement du backend..."
-    - kubectl apply -f deployment.yaml
+    - echo "Déploiement de la base de données et du backend..."
+    # Les nouveaux fichiers de ton équipe
+    - kubectl apply -f k8s/postgres-deployment.yaml
+    - kubectl apply -f k8s/api-deployment.yaml
 
     # --- NOUVEAU : Déploiement du Frontend et de l'Ingress ---
     - echo "Déploiement du frontend..."
-    # Astuce DevOps : On remplace le nom fictif de l'image dans notre fichier par la vraie URL du registre GitLab !
+    # Astuce DevOps : On remplace le nom fictif de l'image par la vraie URL du registre GitLab !
     - sed -i "s|frontend-image:latest|$CI_REGISTRY_IMAGE/frontend:latest|g" k8s/frontend.yaml
     - kubectl apply -f k8s/frontend.yaml
 
     - echo "Configuration du routeur Ingress (Traefik)..."
     - kubectl apply -f k8s/ingress.yaml
-    - echo "Déploiement terminé avec succès ! 🚀"
+    - echo "Déploiement de toute l'infrastructure terminé avec succès ! 🚀"

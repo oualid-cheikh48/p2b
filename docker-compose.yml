@@ -25,17 +25,23 @@ services:
     container_name: p2b_api
     restart: always
     environment:
+      DATABASE_URL: postgresql://p2b_user:p2b_pass@db:5432/p2b_db
       DB_HOST: db
       DB_USER: p2b_user
       DB_PASSWORD: p2b_pass
-      MINIO_PUBLIC_URL: http://localhost:9000
       DB_NAME: p2b_db
       PORT: 3000
+      JWT_SECRET: supersecretkey
+      MINIO_ENDPOINT: 172.16.248.133
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: admin2026
+      MINIO_BUCKET: etnair-images
+      MINIO_PUBLIC_URL: http://172.16.248.133:9000
     ports:
       - "3000:3000"
     depends_on:
       - db
-      - minio
     networks:
       - p2b_network
 
