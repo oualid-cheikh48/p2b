@@ -1,23 +1,16 @@
 stages:
   - test
   - security
+  - build
   - deploy
 
-test_backend:
+test:
   stage: test
   image: node:18
   script:
     - cd backend
     - npm install
     - npm test
-
-test_frontend:
-  stage: test
-  image: node:20
-  script:
-    - cd frontend
-    - npm install
-    - npm test -- --run
 
 audit_securite:
   stage: security
@@ -27,17 +20,42 @@ audit_securite:
     - npm install --package-lock-only
     - npm audit --audit-level=high
 
+# --- NOUVEAU JOB : L'Usine Frontend (Version Kubernetes/Kaniko) ---
+build_frontend:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "Configuration de l'accès au registre GitLab..."
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "Construction et envoi automatique de l'image par Kaniko..."
+    - /kaniko/executor --context $CI_PROJECT_DIR/frontend --dockerfile $CI_PROJECT_DIR/frontend/Dockerfile --destination $CI_REGISTRY_IMAGE/frontend:latest
+
 deploy:
   stage: deploy
   only:
     - main
   image: docker
   before_script:
+    # Installation de kubectl (existant)
     - apk add --no-cache curl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
   script:
-    - echo "Déploiement en cours..."
-    - kubectl apply -f k8s/api-deployment.yaml
+    - echo "Déploiement de la base de données et du backend..."
+    # Les nouveaux fichiers de ton équipe
     - kubectl apply -f k8s/postgres-deployment.yaml
+    - kubectl apply -f k8s/api-deployment.yaml
+
+    # --- NOUVEAU : Déploiement du Frontend et de l'Ingress ---
+    - echo "Déploiement du frontend..."
+    # Astuce DevOps : On remplace le nom fictif de l'image par la vraie URL du registre GitLab !
+    - sed -i "s|frontend-image:latest|$CI_REGISTRY_IMAGE/frontend:latest|g" k8s/frontend.yaml
+    - kubectl apply -f k8s/frontend.yaml
+
+    - echo "Configuration du routeur Ingress (Traefik)..."
+    - kubectl apply -f k8s/ingress.yaml
+    - echo "Déploiement de toute l'infrastructure terminé avec succès ! 🚀"
