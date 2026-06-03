@@ -14,21 +14,37 @@ spec:
     spec:
       containers:
       - name: p2b-api
-        image: aminkrbh/p2b-api:v1 # Ton image Docker Hub
+        image: aminkrbh/p2b-api:v1
         env:
+        - name: DATABASE_URL
+          value: "postgresql://p2b_user:p2b_pass@postgresql-service:5432/p2b_db"
         - name: DB_HOST
-          value: "postgresql-service" # Magie K8s
+          value: "postgresql-service"
         - name: DB_USER
           value: "p2b_user"
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: p2b-db-secret # Utilise le coffre-fort K8s !
+              name: p2b-db-secret
               key: password
         - name: DB_NAME
           value: "p2b_db"
         - name: PORT
           value: "3000"
+        - name: JWT_SECRET
+          value: "supersecretkey"
+        - name: MINIO_ENDPOINT
+          value: "172.16.248.133"
+        - name: MINIO_PORT
+          value: "9000"
+        - name: MINIO_ACCESS_KEY
+          value: "admin"
+        - name: MINIO_SECRET_KEY
+          value: "admin2026"
+        - name: MINIO_BUCKET
+          value: "etnair-images"
+        - name: MINIO_PUBLIC_URL
+          value: "http://172.16.248.133:9000"
         ports:
         - containerPort: 3000
 ---
@@ -43,4 +59,4 @@ spec:
   ports:
   - port: 3000
     targetPort: 3000
-    nodePort: 30000 # Port externe pour les navigateurs/Postman
+    nodePort: 30000
