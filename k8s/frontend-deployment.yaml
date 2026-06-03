@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: p2b-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: p2b-frontend
+  template:
+    metadata:
+      labels:
+        app: p2b-frontend
+    spec:
+      containers:
+      - name: p2b-frontend
+        image: frontend-image:latest # Important : laisse ce nom exact, le sed du pipeline s'occupe du reste
+        ports:
+        - containerPort: 80          # Nginx écoute sur le port 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: p2b-frontend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: p2b-frontend
+  ports:
+  - port: 80
+    targetPort: 80
